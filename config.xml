@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Items>
+  <Item Id="1" name="eclipse1" source="C:\Users\Xianglos\Desktop\eclipse.zip" destination="E:\tmp1" operation="Expand-Archive"/>
+  <Item Id="2" name="eclipse2" source="C:\Users\Xianglos\Desktop\eclipse.zip" destination="E:\tmp2" operation="Expand-Archive"/>
+  <Item Id="3" name="image" source="C:\Users\Xianglos\Desktop\test.png" destination="E:\tmp\" operation="Copy-Item" />
+  <Item Id="4" name="minecraft" source="C:\Users\Xianglos\Desktop\mc.zip" destination="E:\tmp1" operation="Expand-Archive"/>
+  <Item Id="5" name="something1" source="" destination="" operation=""/>
+  <Item Id="6" name="something2" source="" destination="" operation=""/>
+  <Item Id="7" name="something3" source="" destination="" operation=""/>
+  <Item Id="8" name="something4" source="" destination="" operation=""/>
+  <Item Id="9" name="something5" source="" destination="" operation=""/>
+  <Item Id="10" name="something6" source="" destination="" operation=""/>
+  <Item Id="11" name="something7" source="" destination="" operation=""/>
+  <Item Id="12" name="something8" source="" destination="" operation=""/>
+  <Item Id="13" name="something9" source="" destination="" operation=""/>
+  <Item Id="14" name="somethinga" source="" destination="" operation=""/>
+  <Item Id="15" name="somethingb" source="" destination="" operation=""/>
+</Items>
