@@ -1,29 +1,29 @@
 Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, System.Xml.Linq
 
-# ¶¨Òå XML ÎÄ¼şÂ·¾¶
+# å®šä¹‰ XML æ–‡ä»¶è·¯å¾„
 $xmlFilePath = ".\config.xml"
 
-# ¼ÓÔØ²¢½âÎö XML ÎÄ¼ş
+# åŠ è½½å¹¶è§£æ XML æ–‡ä»¶
 [xml]$xmlContent = Get-Content $xmlFilePath
 $items = $xmlContent.Items.Item
 
-# ¶¨Òå XAML ÎÄ¼şÂ·¾¶
+# å®šä¹‰ XAML æ–‡ä»¶è·¯å¾„
 $xamlFilePath = ".\MainWindow.xaml"
 
-# ¶ÁÈ¡ XAML ÄÚÈİ
+# è¯»å– XAML å†…å®¹
 $xamlContent = Get-Content $xamlFilePath -Raw
 
-# ¼ÓÔØ XAML ÄÚÈİ
+# åŠ è½½ XAML å†…å®¹
 $reader = [System.Xml.XmlReader]::Create([System.IO.StringReader]::new($xamlContent))
 $window = [Windows.Markup.XamlReader]::Load($reader)
 
-# »ñÈ¡ StackPanel ¿Ø¼ş
+# è·å– StackPanel æ§ä»¶
 $stackPanel = $window.FindName("StackPanel")
 
-# »ñÈ¡ OutputTextBox ¿Ø¼ş
+# è·å– OutputTextBox æ§ä»¶
 $outputTextBox = $window.FindName("OutputTextBox")
 
-# ¶¯Ì¬Éú³É¸´Ñ¡¿ò
+# åŠ¨æ€ç”Ÿæˆå¤é€‰æ¡†
 foreach ($item in $items) {
     $checkBox = New-Object Windows.Controls.CheckBox
     $checkBox.Content = $item.name
@@ -35,13 +35,13 @@ foreach ($item in $items) {
     $stackPanel.Children.Add($checkBox)
 }
 
-# »ñÈ¡°´Å¥¿Ø¼ş
+# è·å–æŒ‰é’®æ§ä»¶
 $deployButton = $window.FindName("DeployButton")
 $cancelButton = $window.FindName("CancelButton")
 
-# ´¦Àí²¿Êğ°´Å¥µã»÷ÊÂ¼ş
+# å¤„ç†éƒ¨ç½²æŒ‰é’®ç‚¹å‡»äº‹ä»¶
 $deployButton.Add_Click({
-    # Êä³ö½á¹ûµ½ OutputTextBox
+    # è¾“å‡ºç»“æœåˆ° OutputTextBox
     $currentDateTime = Get-Date
     $outputTextBox.Dispatcher.Invoke([action]{
         $outputTextBox.AppendText("====================================`n")
@@ -57,25 +57,25 @@ $deployButton.Add_Click({
                 $command="Expand-Archive -Path "+$_.Tag.Source+" -Destination "+ $_.Tag.Destination
             } elseif ($_.Tag.Operation -eq "Copy-Item") {
                 #Copy-Item -Path "C:\oldfile.txt" -Destination "C:\\NewFolder\"
-                $command="Copy-Item -Path "+$_.Tag.Source+" -Destination "+ $_.Tag.Destination
+                $command="Copy-Item -Path "+$_.Source+" -Destination "+ $_.Tag.Destination
             } else {
                 $command=""
-                [System.Windows.MessageBox]::Show("Î´Öª²Ù×÷£¡", "¾¯¸æ", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+                [System.Windows.MessageBox]::Show("æœªçŸ¥æ“ä½œï¼", "è­¦å‘Š", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
                 continue
             }
 
-            # µ÷ÊÔÓÃ
+            # è°ƒè¯•ç”¨
             #$outputTextBox.Dispatcher.Invoke([action]{
             #    $outputTextBox.AppendText("command::$command`n")
             #})
 
-            # Æô¶¯Ò»¸öĞÂµÄ PowerShell ×÷ÒµÀ´Ö´ĞĞÃüÁî
+            # å¯åŠ¨ä¸€ä¸ªæ–°çš„ PowerShell ä½œä¸šæ¥æ‰§è¡Œå‘½ä»¤
             $job = Start-Job -ScriptBlock {
                 param($cmd)
                 Invoke-Expression $cmd
             } -ArgumentList $command
 
-            # ¼à¿Ø×÷ÒµµÄÊä³ö²¢¸üĞÂÎÄ±¾¿ò
+            # ç›‘æ§ä½œä¸šçš„è¾“å‡ºå¹¶æ›´æ–°æ–‡æœ¬æ¡†
             while (-not $job.State -eq 'Completed' -and -not $job.State -eq 'Failed') {
                 $output = Receive-Job -Job $job
                 if ($output) {
@@ -86,7 +86,7 @@ $deployButton.Add_Click({
                 Start-Sleep -Milliseconds 100
             }
 
-            # »ñÈ¡×îÖÕµÄÊä³ö
+            # è·å–æœ€ç»ˆçš„è¾“å‡º
             $finalOutput = Receive-Job -Job $job
             if ($finalOutput) {
                 $outputTextBox.Dispatcher.Invoke([action]{
@@ -94,26 +94,26 @@ $deployButton.Add_Click({
                 })
             }
 
-            # Êä³ö½á¹ûµ½ OutputTextBox
+            # è¾“å‡ºç»“æœåˆ° OutputTextBox
             $currentDateTime = Get-Date
             $outputTextBox.Dispatcher.Invoke([action]{
                 $outputTextBox.AppendText("$currentDateTime::Deploy:"+$_.Tag.Content+" finished.`n")
             })
 
-            # É¾³ı×÷Òµ
+            # åˆ é™¤ä½œä¸š
             if ($job.State -eq 'Completed' -or $job.State -eq 'Failed') {
                 Remove-Job -Job $job
             }
         }
-        #[System.Windows.MessageBox]::Show("²¿ÊğÏêÇé:`n$($details -join "`n")", "²¿Êğ", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)
+        #[System.Windows.MessageBox]::Show("éƒ¨ç½²è¯¦æƒ…:`n$($details -join "`n")", "éƒ¨ç½²", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)
     } else {
-        # Êä³ö½á¹ûµ½ OutputTextBox
+        # è¾“å‡ºç»“æœåˆ° OutputTextBox
         $outputTextBox.Dispatcher.Invoke([action]{
-            $outputTextBox.AppendText("Î´Ñ¡ÔñÈÎºÎÏî!`n")
+            $outputTextBox.AppendText("æœªé€‰æ‹©ä»»ä½•é¡¹!`n")
         })
-        #[System.Windows.MessageBox]::Show("Î´Ñ¡ÔñÈÎºÎÏî", "¾¯¸æ", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+        #[System.Windows.MessageBox]::Show("æœªé€‰æ‹©ä»»ä½•é¡¹", "è­¦å‘Š", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
     }
-    # Êä³ö½á¹ûµ½ OutputTextBox
+    # è¾“å‡ºç»“æœåˆ° OutputTextBox
     $currentDateTime = Get-Date
     $outputTextBox.Dispatcher.Invoke([action]{
         $outputTextBox.AppendText("$currentDateTime::QucikDeploy End.`n")
@@ -121,10 +121,10 @@ $deployButton.Add_Click({
     })
 })
 
-# ´¦ÀíÈ¡Ïû°´Å¥µã»÷ÊÂ¼ş
+# å¤„ç†å–æ¶ˆæŒ‰é’®ç‚¹å‡»äº‹ä»¶
 $cancelButton.Add_Click({
     $window.Close()
 })
 
-# ÏÔÊ¾´°¿Ú
+# æ˜¾ç¤ºçª—å£
 $null = $window.ShowDialog()
